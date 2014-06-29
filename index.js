@@ -17,12 +17,18 @@ module.exports = {
 	'receive': receive,
 	'get': get,
 	'post': post,
-	'parseBody': parseBody
+	'parseBody': parseBody,
+	'setEncoding': setEncoding
 };
+
+/*###################################
+  #         GLOBAL VARIABLES        #
+  ###################################*/
 
 /* This dictionary maps URL pathnames to handler functions and options
  * for processing HTTP requests to those pathnames
  * pathname -> supported methods -> handler, parseOption
+ *
  * e.g. {
  *     '/index': {
  *        'GET': {
@@ -38,20 +44,27 @@ module.exports = {
  */
 var pathMap = {};
 
+// this encoding is applied to requests and can be set using setEncoding
+var requestEncoding = settings.DEFAULT_ENCODING;
+
 /*###################################
   #         PUBLIC FUNCTIONS        #
   ###################################*/
 
 /*
- * handle
+ * >> handle(request, response)
+ * This function is intended to be passed as the "requestListener"
+ * argument to http.createServer, and takes HTTP requests sent to 
+ * the server and routes them to the appropriate handler function.
+ * It also performs some error checking and adds some convenient members
+ * to the request and response objects along the way.
  */
-function handle(request, response, encodingOrNone) {
-	if(typeof encodingOrNone === undefined) {
-		encodingOrNone = settings.DEFAULT_ENCODING;
-	}
+function handle(request, response) {
+	request.setEncoding(requestEncoding);
 	
-	request.setEncoding(encodingOrNone);
-	
+	// parse the URL for this request and place its elements in a
+	// dictionary that is saved as request.urlparts (see Node "url"
+	// module documentation for more information)
 	request.urlparts = url.parse(request.url, true);
 	request.parameters = request.urlparts.query;
 	
@@ -93,10 +106,16 @@ function handle(request, response, encodingOrNone) {
 	request.on('end', function() {
 		request.body = parseBody(body, pathValues.parseOption);
 		
+		// invoke user-defined handler function
 		pathValues.handler(request, response);
 	});
 }
 
+/*
+ * >> receive(method, pathname, handler, [parseOption])
+ * Registers a handler function for a request of the provided
+ * method type to the provided pathname.
+ */
 function receive(method, pathname, handler, parseOptionOrNone) {
 	if(typeof parseOptionOrNone === undefined) {
 		parseOptionOrNone = settings.DEFAULT_PARSE_OPTION;
@@ -122,14 +141,28 @@ function receive(method, pathname, handler, parseOptionOrNone) {
 	pathMap[pathname][method] = methodValues;
 }
 
+/*
+ * >> get(pathname, handler, [parseOption])
+ * Registers a handler function for a GET request to the provided pathname.
+ */
 function get(pathname, handler, parseOptionOrNone) {
 	receive('GET', pathname, handler, parseOptionOrNone);
 }
 
+/*
+ * >> post(pathname, handler, [parseOption])
+ * Registers a handler function for a POST request to the provided pathname.
+ */
 function post(pathname, handler, parseOptionOrNone) {
 	receive('POST', pathname, handler, parseOptionOrNone);
 }
 
+/*
+ * >> parseBody(body, parseOption)
+ * Parses the given body string according to
+ * the given option. It supports "json" and "querystring"
+ * and will return the body unaltered with "raw".
+ */
 function parseBody(body, parseOption) {
 	if(parseOption === 'raw') {
 		return body;
@@ -142,4 +175,12 @@ function parseBody(body, parseOption) {
 	}
 	
 	throw 'ERROR: "' + parseOption + '" is not a valid body parsing option.';
+}
+
+/*
+ * >> setEncoding(encodingIdentifier)
+ * Sets the encoding to be used to interpret request contents.
+ */
+function setEncoding(encodingIdentifier) {
+	requestEncoding = encodingIdentifier;
 }
