@@ -1,0 +1,13 @@
+{
+  "name": "foundry-express",
+  "version": "0.0.1",
+  "description": "A lightweight framework that attempts to replicate the convenience of Express using only core Node.js",
+  "author": {
+    "name": "Ian Reardon",
+    "email": "ianjreardon@gmail.com"
+  },
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "main": "index.js"
+}
