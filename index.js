@@ -10,6 +10,7 @@ var querystring = require('querystring');
 
 // Local modules
 var settings = require('./settings.js');
+var responseShortcuts = require('./response.js');
 
 // Public API functions
 module.exports = {
@@ -61,6 +62,11 @@ var requestEncoding = settings.DEFAULT_ENCODING;
  */
 function handle(request, response) {
 	request.setEncoding(requestEncoding);
+	
+	// save all shortcut functions defined in response.js on the response object
+	for(var key in responseShortcuts) {
+		response[key] = responseShortcuts[key];
+	}
 	
 	// parse the URL for this request and place its elements in a
 	// dictionary that is saved as request.urlparts (see Node "url"
