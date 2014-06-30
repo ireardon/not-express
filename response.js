@@ -20,10 +20,10 @@ function json(content) {
 }
 
 /*
- * >> response.render(content)
+ * >> response.html(content)
  * Dispatches the HTTP response with the given HTML content.
  */
-function render(content) {
+function html(content) {
 	this.writeHead(200, { 'Content-Type': 'text/html' });
 	this.end(content);
 }
@@ -34,5 +34,14 @@ function render(content) {
  */
 function text(content) {
 	this.writeHead(200, { 'Content-Type': 'text/plain' });
+	this.end(content);
+}
+
+/*
+ * >> response.xml(content)
+ * Dispatches the HTTP response with the given XML content.
+ */
+function xml(content) {
+	this.writeHead(200, { 'Content-Type': 'application/xml' });
 	this.end(content);
 }

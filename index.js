@@ -64,15 +64,15 @@ function handle(request, response) {
 	request.setEncoding(requestEncoding);
 	
 	// save all shortcut functions defined in response.js on the response object
-	for(var key in responseShortcuts) {
+	Object.keys(responseShortcuts).forEach(function(key) {
 		response[key] = responseShortcuts[key];
-	}
+	});
 	
 	// parse the URL for this request and place its elements in a
 	// dictionary that is saved as request.urlparts (see Node "url"
 	// module documentation for more information)
 	request.urlparts = url.parse(request.url, true);
-	request.parameters = request.urlparts.query;
+	request.params = request.urlparts.query;
 	
 	var pathname = request.urlparts.pathname;
 	var pathMethods = pathMap[pathname];
@@ -86,12 +86,11 @@ function handle(request, response) {
 	
 	var methodSupported = false;
 	// look for the method of this request in this path's supported methods
-	for(var method in Object.keys(pathMethods)) {
+	Object.keys(pathMethods).some(function(method) {
 		if(method === request.method) {
-			methodSupported = true;
-			break;
+			return methodSupported = true; // acts as a break
 		}
-	}
+	});
 	
 	// method not supported for this path, respond 400 bad request
 	if(!methodSupported) {
