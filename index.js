@@ -45,6 +45,16 @@ module.exports = {
  */
 var pathMap = {};
 
+/* This dictionary contains a listing of middleware functions to
+ * be applied during the execution of handle. Functions in the early
+ * list are run at the beginning of handle, functions in the late list
+ * are run at the end of handle.
+ */
+var middlewareMap = {
+	'early': [],
+	'late': []
+};
+
 // this encoding is applied to requests and can be set using setEncoding
 var requestEncoding = settings.DEFAULT_ENCODING;
 
@@ -61,6 +71,11 @@ var requestEncoding = settings.DEFAULT_ENCODING;
  * to the request and response objects along the way.
  */
 function handle(request, response) {
+	// run each registered "early" middleware function on the request and response
+	middlewareMap.early.forEach(function(middlewareFunction) {
+		middlewareFunction(request, response);
+	});
+
 	request.setEncoding(requestEncoding);
 	
 	// save all shortcut functions defined in response.js on the response object
@@ -111,6 +126,11 @@ function handle(request, response) {
 	request.on('end', function() {
 		request.body = parseBody(body, pathValues.parseOption);
 		
+		// run each registered "late" middleware function on the request and response
+		middlewareMap.late.forEach(function(middlewareFunction) {
+			middlewareFunction(request, response);
+		});
+		
 		// invoke user-defined handler function
 		pathValues.handler(request, response);
 	});
@@ -160,6 +180,24 @@ function get(pathname, handler, parseOptionOrNone) {
  */
 function post(pathname, handler, parseOptionOrNone) {
 	receive('POST', pathname, handler, parseOptionOrNone);
+}
+
+/*
+ * >> useEarly(middlewareFunction)
+ * Registers a middleware function to be called with arguments (request, response)
+ * before any of the processing in handle.
+ */
+function useEarly(middlewareFunction) {
+	middlewareMap.early.push(middlewareFunction);
+}
+
+/*
+ * >> useEarly(middlewareFunction)
+ * Registers a middleware function to be called with arguments (request, response)
+ * after all of the processing in handle.
+ */
+function useLate(middlewareFunction) {
+	middlewareMap.late.push(middlewareFunction);
 }
 
 /*
