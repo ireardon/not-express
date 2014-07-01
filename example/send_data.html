@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script>
+			var json_data = {
+				"microsoft": {
+					"cambridge": "alvin chardon",
+					"redmond": "satya nadella"
+				}
+			};
+			function reqListener () {
+				alert("And this is a response from the server:\n" + this.responseText);
+			}
+			var ajaxRequest = new XMLHttpRequest();
+			ajaxRequest.onload = reqListener;
+			ajaxRequest.open("post", "/receive_json", true);
+			ajaxRequest.send(JSON.stringify(json_data));
+		</script>
+	</head>
+	<body>
+		<p>This page just sent JSON data to the server! Check the server console for the data...</p>
+	</body>
+</html>

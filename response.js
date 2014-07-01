@@ -6,7 +6,7 @@
 
 module.exports = {
 	'json': json,
-	'render': render,
+	'html': html,
 	'text': text
 };
 

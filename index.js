@@ -14,10 +14,12 @@ var responseShortcuts = require('./response.js');
 
 // Public API functions
 module.exports = {
-	'handle': handle,
+	'serve': serve,
 	'receive': receive,
 	'get': get,
 	'post': post,
+	'use': use,
+	'useEarly': useEarly,
 	'parseBody': parseBody,
 	'setEncoding': setEncoding
 };
@@ -46,9 +48,9 @@ module.exports = {
 var pathMap = {};
 
 /* This dictionary contains a listing of middleware functions to
- * be applied during the execution of handle. Functions in the early
- * list are run at the beginning of handle, functions in the late list
- * are run at the end of handle.
+ * be applied during the execution of this.serve. Functions in the early
+ * list are run at the beginning of this.serve, functions in the late list
+ * are run at the end of this.serve.
  */
 var middlewareMap = {
 	'early': [],
@@ -63,14 +65,14 @@ var requestEncoding = settings.DEFAULT_ENCODING;
   ###################################*/
 
 /*
- * >> handle(request, response)
+ * >> serve(request, response)
  * This function is intended to be passed as the "requestListener"
  * argument to http.createServer, and takes HTTP requests sent to 
  * the server and routes them to the appropriate handler function.
  * It also performs some error checking and adds some convenient members
  * to the request and response objects along the way.
  */
-function handle(request, response) {
+function serve(request, response) {
 	// run each registered "early" middleware function on the request and response
 	middlewareMap.early.forEach(function(middlewareFunction) {
 		middlewareFunction(request, response);
@@ -142,11 +144,11 @@ function handle(request, response) {
  * method type to the provided pathname.
  */
 function receive(method, pathname, handler, parseOptionOrNone) {
-	if(typeof parseOptionOrNone === undefined) {
+	if(typeof parseOptionOrNone === 'undefined') {
 		parseOptionOrNone = settings.DEFAULT_PARSE_OPTION;
 	}
 	
-	if(!(callback && typeof(callback) === 'function')) {
+	if(!(handler && typeof(handler) === 'function')) {
 		throw 'ERROR: Given handler is not callable.';
 	}
 	
@@ -183,21 +185,24 @@ function post(pathname, handler, parseOptionOrNone) {
 }
 
 /*
- * >> useEarly(middlewareFunction)
+ * >> use(middlewareFunction)
  * Registers a middleware function to be called with arguments (request, response)
- * before any of the processing in handle.
+ * after all of the processing in this.serve. This is useful if you want to make
+ * use of any of the convenient fields or functions added to the request and response
+ * objects by foundry-express.
  */
-function useEarly(middlewareFunction) {
-	middlewareMap.early.push(middlewareFunction);
+function use(middlewareFunction) {
+	middlewareMap.late.push(middlewareFunction);
 }
 
 /*
  * >> useEarly(middlewareFunction)
  * Registers a middleware function to be called with arguments (request, response)
- * after all of the processing in handle.
+ * before any of the processing in this.serve. This is useful for accessing the
+ * untouched request and response objects before foundry-express gets to them.
  */
-function useLate(middlewareFunction) {
-	middlewareMap.late.push(middlewareFunction);
+function useEarly(middlewareFunction) {
+	middlewareMap.early.push(middlewareFunction);
 }
 
 /*
