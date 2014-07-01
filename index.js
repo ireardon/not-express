@@ -109,9 +109,9 @@ function serve(request, response) {
 		}
 	});
 	
-	// method not supported for this path, respond 400 bad request
+	// method not supported for this path, respond 405 method not supported
 	if(!methodSupported) {
-		response.writeHead(400, "Method not supported");
+		response.writeHead(405, "Method not supported");
 		response.end();
 		return;
 	}

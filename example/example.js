@@ -5,12 +5,12 @@ var fexpress = require('../index.js');
 http.createServer(fexpress.serve).listen(8080);
 console.log('-- Webserver listening on port 8080');
 
-// set up a view to handle get requests to /
+// set up a view to handle get requests to / by returning an html page
 fexpress.get('/', function(request, response) {
 	response.html('Welcome to the example foundry-express server!');
 });
 
-// set up a view to handle post requests to /receive_json
+// set up a view to handle post requests to /receive_json and log received data
 fexpress.post('/receive_json', function(request, response) {
 	console.log('\nReceived JSON data from the webpage! Here it is:');
 	console.log(request.body);
@@ -34,6 +34,11 @@ fexpress.get('/send_json', function(request, response) {
 			response.html(fileContents);
 		}
 	});
+});
+
+// set up a view for /redirect that sends a redirect response to the browser instructing it to navigate to /
+fexpress.get('/redirect', function(request, response) {
+	response.redirect('/');
 });
 
 // install a middleware function that is invoked whenever an HTTP request is received

@@ -7,7 +7,12 @@
 module.exports = {
 	'json': json,
 	'html': html,
-	'text': text
+	'text': text,
+	'xml': xml,
+	'redirect': redirect,
+	'notFound': notFound,
+	'badRequest': badRequest,
+	'forbidden': forbidden
 };
 
 /*
@@ -44,4 +49,41 @@ function text(content) {
 function xml(content) {
 	this.writeHead(200, { 'Content-Type': 'application/xml' });
 	this.end(content);
+}
+
+/*
+ * >> response.redirect(targetUrl)
+ * Dispatches a redirect response asking the user's browser to
+ * resend the request to the provided URL.
+ */
+function redirect(targetUrl) {
+	this.writeHead(307, { 'Location': targetUrl });
+	this.end();
+}
+
+/*
+ * >> response.notFound()
+ * Dispatches the HTTP response with error code 404 not found.
+ */
+function notFound() {
+	this.writeHead(404);
+	this.end();
+}
+
+/*
+ * >> response.badRequest()
+ * Dispatches the HTTP response with error code 400 bad request.
+ */
+function badRequest() {
+	this.writeHead(400);
+	this.end();
+}
+
+/*
+ * >> response.forbidden()
+ * Dispatches the HTTP response with error code 403 forbidden.
+ */
+function forbidden() {
+	this.writeHead(403);
+	this.end();
 }
