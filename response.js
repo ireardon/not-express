@@ -12,7 +12,8 @@ module.exports = {
 	'redirect': redirect,
 	'notFound': notFound,
 	'badRequest': badRequest,
-	'forbidden': forbidden
+	'forbidden': forbidden,
+	'serverError': serverError
 };
 
 /*
@@ -85,5 +86,14 @@ function badRequest() {
  */
 function forbidden() {
 	this.writeHead(403);
+	this.end();
+}
+
+/*
+ * >> response.serverError()
+ * Dispatches the HTTP response with error code 500 internal server error.
+ */
+function serverError() {
+	this.writeHead(500);
 	this.end();
 }

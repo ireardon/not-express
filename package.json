@@ -1,5 +1,5 @@
 {
-  "name": "foundry-express",
+  "name": "not-express",
   "version": "0.0.1",
   "description": "A lightweight framework that attempts to replicate the convenience of Express using only core Node.js",
   "author": {

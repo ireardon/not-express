@@ -1,6 +1,6 @@
 /*
  * Summary: This file contains persistent settings for the 
- * foundry-express module which you can modify to suit your needs.
+ * not-express module which you can modify to suit your needs.
  *
  */
 

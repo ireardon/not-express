@@ -1,5 +1,5 @@
 /*
- * Summary: This file contains the public API functions for foundry-express
+ * Summary: This file contains the public API functions for not-express
  * Author: Ian Reardon <ianjreardon@gmail.com>
  *
  */
@@ -189,7 +189,7 @@ function post(pathname, handler, parseOptionOrNone) {
  * Registers a middleware function to be called with arguments (request, response)
  * after all of the processing in this.serve. This is useful if you want to make
  * use of any of the convenient fields or functions added to the request and response
- * objects by foundry-express.
+ * objects by not-express.
  */
 function use(middlewareFunction) {
 	middlewareMap.late.push(middlewareFunction);
@@ -199,7 +199,7 @@ function use(middlewareFunction) {
  * >> useEarly(middlewareFunction)
  * Registers a middleware function to be called with arguments (request, response)
  * before any of the processing in this.serve. This is useful for accessing the
- * untouched request and response objects before foundry-express gets to them.
+ * untouched request and response objects before not-express gets to them.
  */
 function useEarly(middlewareFunction) {
 	middlewareMap.early.push(middlewareFunction);
